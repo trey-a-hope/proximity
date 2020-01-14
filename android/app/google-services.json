@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "668829773719",
+    "firebase_url": "https://proximity-f79fb.firebaseio.com",
+    "project_id": "proximity-f79fb",
+    "storage_bucket": "proximity-f79fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668829773719:android:e588750466d35a47729ed2",
+        "android_client_info": {
+          "package_name": "com.example.proximity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "668829773719-v4f56msi4viunobak3p3a29lpd375p00.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSqBwquNULUVFlriQ5E5yfq8oNp4Ysij8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "668829773719-v4f56msi4viunobak3p3a29lpd375p00.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "668829773719-a58917md9ur21etl892mhcpfhhcs96pl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.proximity"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
