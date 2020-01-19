@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_it/get_it.dart';
 import 'package:location/location.dart';
+import 'package:proximity/services/modal.dart';
+import 'package:proximity/widgets/drawer.dart';
+import 'package:proximity/widgets/spinner.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,11 +23,12 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double longitude = 0.0;
   double latitude = 0.0;
   double radius = 20;
+  final GetIt getIt = GetIt.I;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _load();
     _createStream();
   }
@@ -58,6 +63,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void _updateLocation() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       //Retrieve user's current location.
       currentLocation = await location.getLocation();
 
@@ -80,6 +89,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       setState(() {
         longitude = currentLocation.longitude;
         latitude = currentLocation.latitude;
+        _isLoading = false;
       });
     } catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
@@ -129,7 +139,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
@@ -144,41 +154,46 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
       key: _scaffoldKey,
       backgroundColor: Colors.white,
-      body: ListView(
-        children: <Widget>[
-          Text('Longitude: $longitude'),
-          Text('Latitude: $latitude'),
-          RaisedButton(
-            child: Text('Update My Location'),
-            onPressed: _updateLocation,
-          ),
-          Divider(),
-          ListTile(
-            title: Text('Radius: ${radius.toInt()}'),
-            subtitle: Text('Kilometers'),
-          ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              // activeTrackColor: Colors.red,
-              // inactiveTrackColor: Colors.black,
-              // trackHeight: 3.0,
-              // thumbColor: Colors.yellow,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
-              overlayColor: Colors.purple.withAlpha(32),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
+      drawer: DrawerWidget(page: 'Home'),
+      body: _isLoading
+          ? Spinner(
+              text: 'Updating location...',
+            )
+          : ListView(
+              children: <Widget>[
+                Text('Longitude: $longitude'),
+                Text('Latitude: $latitude'),
+                RaisedButton(
+                  child: Text('Update My Location'),
+                  onPressed: _updateLocation,
+                ),
+                Divider(),
+                ListTile(
+                  title: Text('Radius: ${radius.toInt()}'),
+                  subtitle: Text('Kilometers'),
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    // activeTrackColor: Colors.red,
+                    // inactiveTrackColor: Colors.black,
+                    // trackHeight: 3.0,
+                    // thumbColor: Colors.yellow,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                    overlayColor: Colors.purple.withAlpha(32),
+                    overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
+                  ),
+                  child: Slider(
+                      value: radius,
+                      min: 0.0,
+                      max: 50.0,
+                      onChanged: (value) {
+                        setState(() {
+                          radius = value;
+                        });
+                      }),
+                ),
+              ],
             ),
-            child: Slider(
-                value: radius,
-                min: 0.0,
-                max: 50.0,
-                onChanged: (value) {
-                  setState(() {
-                    radius = value;
-                  });
-                }),
-          ),
-        ],
-      ),
     );
   }
 }
