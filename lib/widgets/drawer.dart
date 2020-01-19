@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:proximity/models/user.dart';
 import 'package:proximity/pages/groups_page.dart';
 import 'package:proximity/pages/home_page.dart';
+import 'package:proximity/pages/settings_page.dart';
 
 class DrawerWidget extends StatelessWidget {
-  DrawerWidget({Key key, @required this.page}) : super(key: key);
+  DrawerWidget({Key key, @required this.page, @required this.user})
+      : super(key: key);
   final String page;
+  final User user;
+
   final Color _iconColor = Colors.orange;
 
   @override
@@ -13,8 +18,8 @@ class DrawerWidget extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text('Santos Enoque'),
-            accountEmail: Text('santosenoque.ss@gmail.com'),
+            accountName: Text('${user.firstName} ${user.lastName}'),
+            accountEmail: Text('${user.email}'),
             currentAccountPicture: GestureDetector(
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -51,6 +56,22 @@ class DrawerWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => GroupsPage()),
+                );
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+          //Settings
+          ListTile(
+            leading: Icon(Icons.settings, color: this._iconColor),
+            title: Text('Settings'),
+            subtitle: Text('Adjust your configurations.'),
+            onTap: () {
+              if (page != 'Settings') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
                 );
               } else {
                 Navigator.of(context).pop();

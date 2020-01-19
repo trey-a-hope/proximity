@@ -13,12 +13,12 @@ class Group {
       @required this.radius,
       @required this.name});
 
-  static Group extractDocument(DocumentSnapshot ds) {
+  factory Group.fromDoc({@required DocumentSnapshot doc}) {
     return Group(
-        id: ds.data['id'],
-        leaderID: ds.data['groupID'],
-        radius: ds.data['radius'],
-        name: ds.data['name']);
+        id: doc.data['id'],
+        leaderID: doc.data['groupID'],
+        radius: doc.data['radius'],
+        name: doc.data['name']);
   }
 
   Map<String, dynamic> toMap() {

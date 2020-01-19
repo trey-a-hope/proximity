@@ -5,12 +5,12 @@ import 'package:proximity/models/user.dart';
 import 'package:proximity/services/auth_service.dart';
 import 'package:proximity/widgets/drawer.dart';
 
-class GroupsPage extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   @override
-  State createState() => GroupsPageState();
+  State createState() => SettingsPageState();
 }
 
-class GroupsPageState extends State<GroupsPage> {
+class SettingsPageState extends State<SettingsPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GetIt getIt = GetIt.I;
   User user;
@@ -23,7 +23,9 @@ class GroupsPageState extends State<GroupsPage> {
 
   _load() async {
     user = await getIt<AuthService>().getCurrentUser();
-    setState(() {});
+        setState(() {
+      
+    });
   }
 
   @override
@@ -36,7 +38,7 @@ class GroupsPageState extends State<GroupsPage> {
         ),
         backgroundColor: Colors.white,
         title: Text(
-          'Groups',
+          'Settings',
           style: TextStyle(
               color: Colors.red[700],
               fontWeight: FontWeight.bold,
@@ -46,11 +48,11 @@ class GroupsPageState extends State<GroupsPage> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       drawer: DrawerWidget(
-        page: 'Groups',
+        page: 'Settings',
         user: user,
       ),
       body: Center(
-        child: Text('Groups Page'),
+        child: Text('Settings Page'),
       ),
     );
   }

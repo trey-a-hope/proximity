@@ -23,17 +23,17 @@ class User {
       @required this.firstName,
       @required this.lastName});
 
-  static User extractDocument(DocumentSnapshot ds) {
+  factory User.fromDoc({@required DocumentSnapshot doc}) {
     return User(
-        email: ds.data['email'],
-        id: ds.data['id'],
-        imgUrl: ds.data['imgUrl'],
-        fcmToken: ds.data['fcmToken'],
-        isOnline: ds.data['isOnline'],
-        time: ds.data['time'].toDate(),
-        uid: ds.data['uid'],
-        firstName: ds.data['firstName'],
-        lastName: ds.data['lastName']);
+        email: doc.data['email'],
+        id: doc.data['id'],
+        imgUrl: doc.data['imgUrl'],
+        fcmToken: doc.data['fcmToken'],
+        isOnline: doc.data['isOnline'],
+        time: doc.data['time'].toDate(),
+        uid: doc.data['uid'],
+        firstName: doc.data['firstName'],
+        lastName: doc.data['lastName']);
   }
 
   Map<String, dynamic> toMap() {

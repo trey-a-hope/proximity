@@ -5,9 +5,13 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:location/location.dart';
-import 'package:proximity/services/modal.dart';
+import 'package:proximity/models/user.dart';
+import 'package:proximity/services/auth_service.dart';
 import 'package:proximity/widgets/drawer.dart';
 import 'package:proximity/widgets/spinner.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,6 +29,24 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double radius = 20;
   final GetIt getIt = GetIt.I;
   bool _isLoading = false;
+  User user;
+  Completer<GoogleMapController> _controller = Completer();
+
+  CameraPosition position = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static final CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
 
   @override
   void initState() {
@@ -34,6 +56,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   _load() async {
+    user = await getIt<AuthService>().getCurrentUser();
+
+    setState(() {});
+
     //Determine if location services are turned on.
     bool hasPermission = await location.hasPermission();
     if (hasPermission) {
@@ -129,6 +155,37 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> _goToTheLake() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  }
+
+  Future<void> _goToMyLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    //Retrieve user's current location.
+    currentLocation = await location.getLocation();
+
+    //Create geo point based on location.
+    GeoFirePoint myLocation = geo.point(
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude);
+
+    position = CameraPosition(
+      target: LatLng(currentLocation.latitude, currentLocation.longitude),
+      zoom: 14.4746,
+    );
+
+    // final GoogleMapController controller = await _controller.future;
+    // await controller.animateCamera(CameraUpdate.newCameraPosition(position));
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -154,19 +211,34 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
       key: _scaffoldKey,
       backgroundColor: Colors.white,
-      drawer: DrawerWidget(page: 'Home'),
+      drawer: DrawerWidget(page: 'Home', user: user),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _goToMyLocation,
+        label: Text('Update My Location'),
+        icon: Icon(Icons.location_on),
+      ),
       body: _isLoading
           ? Spinner(
               text: 'Updating location...',
             )
           : ListView(
               children: <Widget>[
-                Text('Longitude: $longitude'),
-                Text('Latitude: $latitude'),
-                RaisedButton(
-                  child: Text('Update My Location'),
-                  onPressed: _updateLocation,
+                SizedBox(
+                  height: 300,
+                  child: GoogleMap(
+                    mapType: MapType.hybrid,
+                    initialCameraPosition: position,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                  ),
                 ),
+                // Text('Longitude: $longitude'),
+                // Text('Latitude: $latitude'),
+                // RaisedButton(
+                //   child: Text('Update My Location'),
+                //   onPressed: _updateLocation,
+                // ),
                 Divider(),
                 ListTile(
                   title: Text('Radius: ${radius.toInt()}'),

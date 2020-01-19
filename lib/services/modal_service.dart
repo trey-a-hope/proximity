@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-abstract class Modal {
+abstract class ModalService {
   void showInSnackBar(
       {@required GlobalKey<ScaffoldState> scaffoldKey,
       @required String message});
@@ -15,7 +15,7 @@ abstract class Modal {
       @required String message});
 }
 
-class ModalImplementation extends Modal {
+class ModalServiceImplementation extends ModalService {
   final GetIt getIt = GetIt.I;
 
   @override

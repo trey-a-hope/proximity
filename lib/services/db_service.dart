@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:proximity/models/user.dart';
 
-abstract class DB {
+abstract class DBService {
   //Users
   Future<void> createUser({@required User user});
   Future<User> retrieveUser({@required String id});
@@ -11,7 +11,7 @@ abstract class DB {
       {@required String userID, @required Map<String, dynamic> data});
 }
 
-class DBImplementation extends DB {
+class DBServiceImplementation extends DBService {
   final CollectionReference _usersDB = Firestore.instance.collection('Users');
 
   @override
@@ -35,7 +35,7 @@ class DBImplementation extends DB {
   Future<User> retrieveUser({String id}) async {
     try {
       DocumentSnapshot documentSnapshot = await _usersDB.document(id).get();
-      return User.extractDocument(documentSnapshot);
+      return User.fromDoc(doc: documentSnapshot);
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -75,7 +75,7 @@ class DBImplementation extends DB {
       List<User> users = List<User>();
       for (int i = 0; i < docs.length; i++) {
         users.add(
-          User.extractDocument(docs[i]),
+          User.fromDoc(doc: docs[i]),
         );
       }
 
